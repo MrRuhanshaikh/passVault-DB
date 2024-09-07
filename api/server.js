@@ -15,9 +15,9 @@ app.use(cors());
 // Route Handling
 // Default route (optional)
 
-app.use('/api/passwords', getPasswordRoutes);
-app.use('/api/passwords', updatePasswordRoutes);
-app.use('/api/passwords', deletePasswordRoutes);
+app.use('/api', getPasswordRoutes);
+app.use('/api', updatePasswordRoutes);
+app.use('/api', deletePasswordRoutes);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
