@@ -19,7 +19,7 @@ const Manager = () => {
     const toastId4 = uuidv4();
 
     const getPassword=async(params) => {
-      let req =await fetch(process.env.Site_Uri)
+      let req =await fetch(import.meta.env.VITE_Site_Uri)
       let password=await req.json()
       setforms(password)
     }   
@@ -45,8 +45,8 @@ const Manager = () => {
         passref.current.type = visibility ? 'password' : 'text'
     }
     const savePassword = async () => {
-            await fetch(process.env.Site_Uri,{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id: form.id})})
-            await fetch(process.env.Site_Uri,{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...form, id: uuidv4()})})
+            await fetch(import.meta.env.VITE_Site_Uri,{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id: form.id})})
+            await fetch(import.meta.env.VITE_Site_Uri,{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...form, id: uuidv4()})})
             if(!toast.isActive(toastId1)){
                 toast('🫡 Password Saved Sucessfuly !!', {
                     position: "top-right",

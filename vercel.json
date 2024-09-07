@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs16.x"
+    }
+  },
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" }
+  ]
+}
