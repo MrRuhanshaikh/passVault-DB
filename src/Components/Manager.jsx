@@ -5,9 +5,6 @@ import show from '../assets/show.svg';
 import unshow from '../assets/unshow.svg';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { v4 as uuidv4 } from "uuid";
-
-
 
 const Manager = () => {
 
