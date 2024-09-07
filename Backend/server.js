@@ -10,7 +10,7 @@ app.use(bodyParser.json())
 app.use(cors())
 
 // Connection URL
-const url = "mongodb://localhost:27017";
+const url = process.env.Mongo_Uri;
 const client = new MongoClient(url);
 
 // Database Name
@@ -43,5 +43,5 @@ app.delete("/", async (req, res) => {
   });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port http://localhost:${port}`);
+  console.log(`Example app listening on port ${process.env.Site_Uri}`);
 });

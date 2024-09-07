@@ -5,6 +5,8 @@ import show from '../assets/show.svg';
 import unshow from '../assets/unshow.svg';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { v4 as uuidv4 } from "uuid";
+
 
 
 const Manager = () => {
@@ -14,12 +16,15 @@ const Manager = () => {
     const [forms, setforms] = useState([])
     const save=useRef()
     const source=useRef()
+    const toastId1 = uuidv4();
+    const toastId2 = uuidv4();
+    const toastId3 = uuidv4();
 
     const getPassword=async(params) => {
-      let req =await fetch('http://localhost:3000/')
+      let req =await fetch(process.env.Site_Uri)
       let password=await req.json()
       setforms(password)
-    }
+    }   
     
 
     useEffect(() => {
@@ -42,18 +47,21 @@ const Manager = () => {
         passref.current.type = visibility ? 'password' : 'text'
     }
     const savePassword = async () => {
-            await fetch("http://localhost:3000/",{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id: form.id})})
-            await fetch("http://localhost:3000/",{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...form, id: uuidv4()})})
-        toast('🫡 Password Saved Sucessfuly !!', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
+            await fetch(process.env.Site_Uri,{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id: form.id})})
+            await fetch(process.env.Site_Uri,{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...form, id: uuidv4()})})
+            if(!toast.isActive(toastId1)){
+                toast('🫡 Password Saved Sucessfuly !!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    toastId:toastId1,
+                });
+            }
         // Reset form state
              setforms([...forms,{...form,id:uuidv4()}]);
              setform({ siteUrl: "", uname: "", upass: "" });
@@ -64,16 +72,19 @@ const Manager = () => {
         if(c){
             setforms(delpass)
             // localStorage.setItem("details", JSON.stringify(forms.filter(item=>item.id!==id)))
-             let res=await fetch("http://localhost:3000/",{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})})
-            toast('😒 Password Deleted Sucessfuly !!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                theme: "light",
-            });
+             let res=await fetch(process.env.Site_Uri,{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})})
+             if(!toast.isActive(toastId2)){
+                toast('😒 Password Deleted Sucessfuly !!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "light",
+                    toastId:toastId2,
+                });
+             }
         }
     }
     const editPassword = async (id) => {
@@ -86,16 +97,19 @@ const Manager = () => {
         setform({ ...form, [e.target.name]: e.target.value })
     }
     const copy = (item) => {
-        toast('©️ Copied to Clipboard!', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
+        if(!toast.isActive(toastId3)){
+            toast('©️ Copied to Clipboard!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                toastId:toastId3,
+            });
+        }
         navigator.clipboard.writeText(item)
     }
 
@@ -103,20 +117,6 @@ const Manager = () => {
 
     return (
         <>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                transition="Bounce"
-            />
-            {/* Same as */}
             <ToastContainer />
             <div className=" Manager-container custom-md:flex custom-md:justify-center  m-5 p-5">
                 <div className="absolute inset-0 -z-10  w-full">
