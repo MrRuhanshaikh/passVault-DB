@@ -3,7 +3,7 @@ const router = express.Router();
 const { MongoClient } = require('mongodb');
 
 // Connection URL and Database Name
-const url = import.meta.env.VITE_Mongo_Uri;
+const url = process.env.Mongo_Uri;
 const dbName = "passVault";
 const client = new MongoClient(url);
 
