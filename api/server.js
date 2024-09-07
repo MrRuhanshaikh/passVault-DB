@@ -7,14 +7,12 @@ const deletePasswordRoutes = require('./routes/deletePassword');
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Allow dynamic port assignment for Vercel
 
 app.use(bodyParser.json());
 app.use(cors());
 
 // Route Handling
-// Default route (optional)
-
 app.use('/api', getPasswordRoutes);
 app.use('/api', updatePasswordRoutes);
 app.use('/api', deletePasswordRoutes);
