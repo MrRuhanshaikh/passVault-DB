@@ -18,11 +18,19 @@ const Manager = () => {
     const toastId3 = uuidv4();
     const toastId4 = uuidv4();
 
-    const getPassword=async(params) => {
-      let req =await fetch(process.env.Site_Uri)
-      let password=await req.json()
-      setforms(password)
-    }   
+    const getPassword = async () => {
+        try {
+            const response = await fetch(import.meta.env.VITE_Site_Uri);
+            if (!response.ok) {
+                throw new Error('Failed to fetch passwords');
+            }
+            const data = await response.json();
+            setforms(data);
+        } catch (error) {
+            console.error('Error fetching passwords:', error);
+        }
+    };
+    
     
 
     useEffect(() => {
@@ -45,45 +53,82 @@ const Manager = () => {
         passref.current.type = visibility ? 'password' : 'text'
     }
     const savePassword = async () => {
-            await fetch(process.env.Site_Uri,{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id: form.id})})
-            await fetch(process.env.Site_Uri,{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...form, id: uuidv4()})})
-            if(!toast.isActive(toastId1)){
-                toast('🫡 Password Saved Sucessfuly !!', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    toastId:toastId1,
-                });
-            }
+    try {
+        // Send POST request to save the password
+        const response = await fetch(import.meta.env.VITE_Site_Uri, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ ...form, id: uuidv4() })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save password');
+        }
+
+        // Fetch updated data from the server
+        await getPassword();
+        
+        if (!toast.isActive(toastId1)) {
+            toast('🫡 Password Saved Successfully !!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                toastId: toastId1,
+            });
+        }
+
         // Reset form state
-             setforms([...forms,{...form,id:uuidv4()}]);
-             setform({ siteUrl: "", uname: "", upass: "" });
-    };
-    const deletePassword = (id) => {
-        // Custom confirmation dialog using react-toastify
+        setform({ siteUrl: "", uname: "", upass: "" });
+    } catch (error) {
+        console.error('Error saving password:', error);
+        toast.error('❌ Failed to save password');
+    }
+};
+
+    
+    const deletePassword = async (id) => {
         if (!toast.isActive(toastId2)) {
             toast(
                 ({ closeToast }) => (
                     <div className='text-center'>
-                        🥺 Are you sure you want to delete this password ?
+                        🥺 Are you sure you want to delete this password?
                         <div className="toast-confirm-buttons flex justify-evenly">
                             <button className='px-3 text-white mt-2 bg-red-700 border-1 border-slate-400 rounded-lg bg-slate-200'
-                                onClick={() => {
-                                    const delpass = forms.filter(item => item.id !== id);
-                                    setforms(delpass);
-                                    localStorage.setItem("details", JSON.stringify(delpass));
-                                    toast.success('😒  Deleted Successfully!');
-                                    closeToast(); // Close the confirmation toast
+                                onClick={async () => {
+                                    try {
+                                        // Send DELETE request to remove the data
+                                        const response = await fetch(import.meta.env.VITE_Site_Uri, { 
+                                            method: "DELETE", 
+                                            headers: { "Content-Type": "application/json" }, 
+                                            body: JSON.stringify({ id }) 
+                                        });
+    
+                                        if (!response.ok) {
+                                            throw new Error('Failed to delete the password');
+                                        }
+    
+                                        // Fetch updated data from the server
+                                        await getPassword();
+                                        
+                                        toast.success('😒  Deleted Successfully!');
+                                    } catch (error) {
+                                        console.error('Error deleting password:', error);
+                                        toast.error('❌ Failed to delete password');
+                                    } finally {
+                                        closeToast(); // Close the confirmation toast
+                                    }
                                 }}
                             >
                                 Yes
                             </button>
-                            <button className='px-3 text-white  mt-2 bg-green-700 border-1 border-slate-400 rounded-lg bg-slate-200' onClick={closeToast}>No</button>
+                            <button className='px-3 text-white mt-2 bg-green-700 border-1 border-slate-400 rounded-lg bg-slate-200' onClick={closeToast}>No</button>
                         </div>
                     </div>
                 ),
@@ -99,24 +144,44 @@ const Manager = () => {
                 }
             );
         }
-
     };
+    
+    
+    
     const editPassword = async (id) => {
-        if(!toast.isActive(toastId4)){
-            toast('🤞 Update Your Password !!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                theme: "light",
-                toastId:toastId4,
+        // First, populate the form with the selected password's data
+        const passwordToEdit = forms.find(item => item.id === id);
+        setform({...passwordToEdit, id: id});
+        setforms(forms.filter(item => item.id !== id)); // Remove the selected password from the forms state
+    
+        // Now, delete the selected password from the database
+        try {
+            const response = await fetch(import.meta.env.VITE_Site_Uri, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id }),
             });
+            if (!response.ok) {
+                throw new Error("Failed to delete password");
+            }
+            if (!toast.isActive(toastId4)) {
+                toast('🤞 Update Your Password !!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "light",
+                    toastId: toastId4,
+                });
+            }
+        } catch (error) {
+            console.error('Failed to delete password:', error);
+            toast.error('Failed to delete password');
         }
-     setform({...forms.filter(i=>i.id==id)[0],id:id})
-     setforms(forms.filter(item=>item.id !== id))
     }
+    
     
     
     const handleChange = (e) => {
