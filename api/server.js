@@ -4,7 +4,7 @@ const cors = require('cors');
 const getPasswordRoutes = require('./routes/getPasswords');
 const updatePasswordRoutes = require('./routes/updatePassword');
 const deletePasswordRoutes = require('./routes/deletePassword');
-require('dotenv').config();
+
 
 const app = express();
 const port = process.env.PORT || 3000; // Allow dynamic port assignment for Vercel
