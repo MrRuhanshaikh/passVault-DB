@@ -16,6 +16,7 @@ const Manager = () => {
     const toastId1 = uuidv4();
     const toastId2 = uuidv4();
     const toastId3 = uuidv4();
+    const toastId4 = uuidv4();
 
     const getPassword=async(params) => {
       let req =await fetch(process.env.Site_Uri)
@@ -63,28 +64,56 @@ const Manager = () => {
              setforms([...forms,{...form,id:uuidv4()}]);
              setform({ siteUrl: "", uname: "", upass: "" });
     };
-    const deletePassword = async(id) => {
-        const delpass=forms.filter(item=>item.id!==id)
-        const c=confirm(" 🥺 Do you really want to deleter this password ?")
-        if(c){
-            setforms(delpass)
-            // localStorage.setItem("details", JSON.stringify(forms.filter(item=>item.id!==id)))
-             let res=await fetch(process.env.Site_Uri,{ method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})})
-             if(!toast.isActive(toastId2)){
-                toast('😒 Password Deleted Sucessfuly !!', {
+    const deletePassword = (id) => {
+        // Custom confirmation dialog using react-toastify
+        if (!toast.isActive(toastId2)) {
+            toast(
+                ({ closeToast }) => (
+                    <div className='text-center'>
+                        🥺 Are you sure you want to delete this password ?
+                        <div className="toast-confirm-buttons flex justify-evenly">
+                            <button className='px-3 text-white mt-2 bg-red-700 border-1 border-slate-400 rounded-lg bg-slate-200'
+                                onClick={() => {
+                                    const delpass = forms.filter(item => item.id !== id);
+                                    setforms(delpass);
+                                    localStorage.setItem("details", JSON.stringify(delpass));
+                                    toast.success('😒  Deleted Successfully!');
+                                    closeToast(); // Close the confirmation toast
+                                }}
+                            >
+                                Yes
+                            </button>
+                            <button className='px-3 text-white  mt-2 bg-green-700 border-1 border-slate-400 rounded-lg bg-slate-200' onClick={closeToast}>No</button>
+                        </div>
+                    </div>
+                ),
+                {
                     position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
+                    autoClose: false, // Disable auto-close for the confirmation
+                    hideProgressBar: true,
+                    closeOnClick: false,
                     pauseOnHover: true,
-                    draggable: true,
+                    draggable: false,
                     theme: "light",
-                    toastId:toastId2,
-                });
-             }
+                    toastId: toastId2,
+                }
+            );
         }
-    }
+
+    };
     const editPassword = async (id) => {
+        if(!toast.isActive(toastId4)){
+            toast('🤞 Update Your Password !!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+                toastId:toastId4,
+            });
+        }
      setform({...forms.filter(i=>i.id==id)[0],id:id})
      setforms(forms.filter(item=>item.id !== id))
     }
