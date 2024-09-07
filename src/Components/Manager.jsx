@@ -20,7 +20,7 @@ const Manager = () => {
 
     const getPassword = async () => {
         try {
-            const response = await fetch(import.meta.env.VITE_Site_Uri);
+            const response = await fetch(process.env.Site_Uri);
             if (!response.ok) {
                 throw new Error('Failed to fetch passwords');
             }
@@ -55,7 +55,7 @@ const Manager = () => {
     const savePassword = async () => {
     try {
         // Send POST request to save the password
-        const response = await fetch(import.meta.env.VITE_Site_Uri, {
+        const response = await fetch(process.env.Site_Uri, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -104,7 +104,7 @@ const Manager = () => {
                                 onClick={async () => {
                                     try {
                                         // Send DELETE request to remove the data
-                                        const response = await fetch(import.meta.env.VITE_Site_Uri, { 
+                                        const response = await fetch(process.env.Site_Uri, { 
                                             method: "DELETE", 
                                             headers: { "Content-Type": "application/json" }, 
                                             body: JSON.stringify({ id }) 
@@ -156,7 +156,7 @@ const Manager = () => {
     
         // Now, delete the selected password from the database
         try {
-            const response = await fetch(import.meta.env.VITE_Site_Uri, {
+            const response = await fetch(process.env.Site_Uri, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: id }),
