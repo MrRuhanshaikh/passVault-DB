@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { MongoClient } = require('mongodb');
-require('dotenv').config();
+
 
 // Connection URL and Database Name
 const url = process.env.MONGODB_URI;
